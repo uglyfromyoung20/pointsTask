@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
 import javax.transaction.Transactional;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -205,14 +206,14 @@ public class MainFrame extends JFrame {
         double distance = 0.0;
         distance = Math.sqrt(Math.pow(pairPoint.getFirstX() - pairPoint.getSecondX(), 2) + Math.pow(pairPoint.getFirstY() - pairPoint.getSecondY(), 2));
         pairPoint.setDistance(distance);
-        log.setMethod("method for calculating in two dimensions");
+        log.setMethod("method for  two dimensions");
     }
 
     public void calculateDistanceThree(PairPoints pairPoint){
         double distance = 0.0;
         distance = Math.sqrt(Math.pow(pairPoint.getFirstX() - pairPoint.getSecondX(), 2) + Math.pow(pairPoint.getFirstY() - pairPoint.getSecondY(), 2) + Math.pow(pairPoint.getFirstZ() - pairPoint.getSecondZ(), 2));
         pairPoint.setDistance(distance);
-        log.setMethod("method for calculating in three dimensions");
+        log.setMethod("method for  three dimensions");
     }
 
     private void calculate() {
@@ -229,11 +230,34 @@ public class MainFrame extends JFrame {
         session.beginTransaction();
         List<Log> logList = session.createQuery("from Log").getResultList();
         System.out.println(logList);
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Id");
+        model.addColumn("File Name");
+        model.addColumn("Point Id");
+        model.addColumn("Distance");
+        model.addColumn("First X");
+        model.addColumn("First Y");
+        model.addColumn("First Z");
+        model.addColumn("Second X");
+        model.addColumn("Second Y");
+        model.addColumn("Second Z");
+        model.addColumn("Start");
+        model.addColumn("End");
+        model.addColumn("Method");
 
         for (Log l : logList) {
-            outputArea.append(String.valueOf(l));
-            System.out.println(l);
+            model.addRow(new Object[]{l.getId(), l.getFileName(), l.getPointId(), l.getDistance(), l.getFirstX(),
+                    l.getFirstY(), l.getFirstZ(), l.getSecondX(), l.getSecondY(), l.getSecondZ(), l.getStart(),
+                    l.getEnd(), l.getMethod()});
         }
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        JFrame frame = new JFrame("Log Table Example");
+        frame.setSize(400, 300);
+
+
+        frame.add(scrollPane);
+        frame.setVisible(true);
         session.getTransaction().commit();
 
         session.close();
